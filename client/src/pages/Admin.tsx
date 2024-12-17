@@ -22,8 +22,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import ScienceIcon from '@mui/icons-material/Science';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import { createUser, getUserDetails } from '../services/userService.js';
-import Loading from '../components/Loading';
-import GenericTable from '../components/GenericTable.jsx';
+import Loading from '../components/Loading.js';
+import GenericTable from '../components/GenericTable.js';
 import { showSnackbar } from '../slices/snackbarSlice.js';
 
 const columns = [

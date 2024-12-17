@@ -19,7 +19,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import FileOpenIcon from '@mui/icons-material/FileOpen';
 import { useTranslation } from 'react-i18next';
-import Search from '../components/Search';
+import Search from './Search';
 
 const dateFields = ['createdAt', 'updatedAt', 'appointmentDate'];
 const translateTableFields = ['status', 'user.role'];
