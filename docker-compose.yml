@@ -1,0 +1,27 @@
+version: '3'
+services:
+  server:
+    image: 654654573249.dkr.ecr.us-east-2.amazonaws.com/vet-hospital:server
+    ports:
+      - "3001:3001" 
+    networks:
+      - app-network
+    environment:
+      - NODE_ENV=production
+    restart: always
+    pull_policy: always
+
+  client:
+    image: 654654573249.dkr.ecr.us-east-2.amazonaws.com/vet-hospital:client
+    ports:
+      - "80:80" 
+    networks:
+      - app-network
+    environment:
+      - NODE_ENV=production
+    restart: always
+    pull_policy: always
+
+networks:
+  app-network:
+    driver: bridge
