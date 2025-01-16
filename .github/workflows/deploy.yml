@@ -1,0 +1,73 @@
+name: Deploy Client and Server to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Log in to Amazon ECR
+    - name: Log in to Amazon ECR
+      run: |
+        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws configure set default.region ${{ secrets.AWS_REGION }}
+        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY_URI }}
+
+    # Build and Push Client Image to ECR
+    - name: Build and push Client Docker image
+      run: |
+        docker build --build-arg EC2_INSTANCE_IP=${{ secrets.EC2_INSTANCE_IP }} --no-cache -t vethospital-client ./client
+        docker tag vethospital-client:latest ${{ secrets.ECR_REPOSITORY_URI }}:client
+        docker push ${{ secrets.ECR_REPOSITORY_URI }}:client
+
+    # Build and Push Server Image to ECR
+    - name: Build and push Server Docker image
+      run: |
+        docker build --build-arg EC2_INSTANCE_IP=${{ secrets.EC2_INSTANCE_IP }} --no-cache -t vethospital-server ./server
+        docker tag vethospital-server:latest ${{ secrets.ECR_REPOSITORY_URI }}:server
+        docker push ${{ secrets.ECR_REPOSITORY_URI }}:server
+
+    # SCP docker-compose file to EC2
+    - name: SCP docker-compose.yml to EC2
+      run: |
+        echo "${{ secrets.EC2_SSH_KEY }}" | base64 -d > ec2_key.pem
+        chmod 600 ec2_key.pem
+        scp -o StrictHostKeyChecking=no -i ec2_key.pem ./docker-compose.yml ec2-user@${{ secrets.EC2_INSTANCE_IP }}:/home/ec2-user/
+
+    # Deploy Docker containers to EC2
+    - name: Deploy Client and Server to EC2
+      run: |
+        echo "${{ secrets.EC2_SSH_KEY }}" | base64 -d > ec2_key.pem
+        chmod 600 ec2_key.pem
+        ssh -t -o StrictHostKeyChecking=no -i ec2_key.pem ec2-user@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
+          # Log in to ECR
+         # $(aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY_URI }})
+         docker login --username AWS -p $(aws ecr get-login-password --region ${{ secrets.AWS_REGION }}) ${{ secrets.ECR_REPOSITORY_URI }}
+
+          # Run Docker Compose
+          cd /home/ec2-user
+          docker-compose down || true  # Stop and remove containers if they already exist
+          docker-compose up -d  # Start the containers in detached mode
+          
+          # Pull and Run Client Image
+          #docker pull ${{ secrets.ECR_REPOSITORY_URI }}:client
+          #docker tag ${{ secrets.ECR_REPOSITORY_URI }}:client foo:latest
+          #docker stop vethospital-client || true
+          #docker rm vethospital-client || true
+          #docker run --rm -d --name vethospital-client --net=host ${{ secrets.ECR_REPOSITORY_URI }}:client
+          
+          # Pull and Run Server Image
+          #docker pull ${{ secrets.ECR_REPOSITORY_URI }}:server
+          #docker stop vethospital-server || true
+          #docker rm vethospital-server || true
+          #docker run --rm -d --name vethospital-server --net=host ${{ secrets.ECR_REPOSITORY_URI }}:server
+        EOF
