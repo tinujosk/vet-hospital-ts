@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Typography,
   Container,
@@ -20,11 +20,10 @@ import AddIcon from '@mui/icons-material/Add';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import PersonIcon from '@mui/icons-material/Person';
 import ScienceIcon from '@mui/icons-material/Science';
-import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
-import { createUser, getUserDetails } from '../services/userService.js';
+import { createUser, getUserDetails } from '../services/userService.ts';
 import Loading from '../components/Loading';
 import GenericTable from '../components/GenericTable.jsx';
-import { showSnackbar } from '../slices/snackbarSlice.js';
+import { showSnackbar } from '../slices/snackbarSlice.ts';
 
 const columns = [
   { headerName: 'User ID', field: 'staffId' },
@@ -89,7 +88,7 @@ const Admin = () => {
 
   useEffect(() => {
     let counts = {};
-    users.forEach(user => {
+    users.forEach((user) => {
       const role = user?.user?.role;
       if (counts[role]) {
         counts[role] += 1;
@@ -100,13 +99,13 @@ const Admin = () => {
     setSummary(counts);
   }, [users]);
 
-  const handleInputChange = e => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewUser({ ...newUser, [name]: value });
-    setErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: '' }));
   };
 
-  const handleRoleChange = e => {
+  const handleRoleChange = (e) => {
     setNewUser({ ...newUser, role: e.target.value });
   };
 
@@ -192,7 +191,7 @@ const Admin = () => {
   };
 
   // This is a front end delete, will be replaced later.
-  const handleDeleteUser = id => {
+  const handleDeleteUser = (id) => {
     console.log({ id });
     const usersUpdated = users.filter((user, i) => {
       console.log({ user });
@@ -286,8 +285,8 @@ const Admin = () => {
           columns={columns}
           data={users}
           actions={['delete']}
-          onRowClick={row => {}}
-          onDelete={row => handleDeleteUser(row._id)}
+          onRowClick={(row) => {}}
+          onDelete={(row) => handleDeleteUser(row._id)}
         />
       </Container>
 

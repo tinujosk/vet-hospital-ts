@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { API_URL } from '../constants';
 
-export const createAppointment = async appointmentData => {
+export const createAppointment = async <T>(appointmentData: T): Promise<T> => {
   console.log('Creating appointment:', appointmentData);
   try {
     const response = await axios.post(
@@ -15,7 +15,7 @@ export const createAppointment = async appointmentData => {
   }
 };
 
-export const getAppointments = async () => {
+export const getAppointments = async <T>():Promise<T> => {
   try {
     const response = await axios.get(`${API_URL}/appointments`);
     return response.data;
@@ -25,7 +25,7 @@ export const getAppointments = async () => {
   }
 };
 
-export const getAppointment = async id => {
+export const getAppointment = async <T>(id:string):Promise<T> => {
   try {
     const response = await axios.get(`${API_URL}/appointments/${id}`);
     return response.data;
@@ -35,7 +35,7 @@ export const getAppointment = async id => {
   }
 };
 
-export const updateAppointment = async (id, updatedData) => {
+export const updateAppointment = async <T>(id:string, updatedData:T): Promise<T> => {
   try {
     const response = await axios.put(
       `${API_URL}/appointments/${id}`,

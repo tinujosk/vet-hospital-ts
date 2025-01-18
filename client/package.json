@@ -14,10 +14,10 @@
     "@stripe/stripe-js": "^5.2.0",
     "axios": "^1.7.7",
     "d3": "^7.9.0",
-    "jspdf": "^2.5.2",
-    "jspdf-autotable": "^3.8.4",
     "i18next": "^21.0.0",
     "i18next-browser-languagedetector": "^8.0.0",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
     "jwt-decode": "^4.0.0",
     "pdfkit": "^0.15.1",
     "react": "^18.3.1",
@@ -30,6 +30,8 @@
     "redux": "^5.0.1"
   },
   "devDependencies": {
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
     "typescript": "^4.9.5"
   },
   "scripts": {

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { API_URL } from '../constants';
 
-export const getDoctors = async () => {
+export const getDoctors = async <T>():Promise<T> => {
     try {
       const response = await axios.get(`${API_URL}/doctors`);
       return response.data;

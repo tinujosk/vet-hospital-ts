@@ -4,16 +4,19 @@ import { fetchLoggedInUserDetails } from '../services/userService';
 // Fetch user details
 export const fetchUserDetails = createAsyncThunk(
   'user/fetchUserDetails',
-  async (userId, { rejectWithValue }) => {
+  async (userId:string, { rejectWithValue }) => {
     try {
       return await fetchLoggedInUserDetails(userId);
-    } catch (error) {
-      return rejectWithValue(error.response.data);
+    } catch (error: unknown) {
+      if(error instanceof Error && 'response' in Error) {
+        return rejectWithValue((error as any).response.data);
+      }
+      return rejectWithValue('Some unknown error occured.')
     }
   }
 );
 
-const initialState = {
+const initialState: {staffDetails: {} | null; loading: boolean; error: {} | null} = {
   staffDetails: {},
   loading: false,
   error: null,

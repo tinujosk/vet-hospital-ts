@@ -1,5 +1,7 @@
 import React from 'react';
 
-function Pharmacy() {}
+function Pharmacy() {
+  return <></>;
+}
 
 export default Pharmacy;

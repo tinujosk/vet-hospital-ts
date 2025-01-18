@@ -20,6 +20,23 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import GlobalSnackbar from './components/GlobalSnackbar';
 
+declare module '@mui/material/styles' {
+  interface Palette {
+    layout?: {
+      main: string;
+    };
+  }
+  interface PaletteOptions {
+    layout?: {
+      main: string;
+    }
+  }
+  interface TypeText {
+    black?:string;
+    white?:string;
+  }
+}
+
 const theme = createTheme({
   palette: {
     primary: {
