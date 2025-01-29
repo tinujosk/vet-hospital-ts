@@ -11,15 +11,42 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { searchMedication } from '../services/medicationService';
+import { type Medicine } from '../types';
 
-const AddMedicationsForm = ({ isModalOpen, closeModal, setMedications }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [medicines, setMedicines] = useState([]);
-  const [selectedMedicine, setSelectedMedicine] = useState(null);
+interface Props {
+  isModalOpen: boolean;
+  closeModal: () => void;
+  setMedications: (medication: Medication) => void;
+}
+
+interface Medication extends Pick<Medicine, 'name' | 'price'> {
+  medication: Medicine['_id'];
+  dosage: string;
+  frequency: string;
+  duration: string;
+}
+
+interface Error {
+  selectedMedicine: string;
+  dosage: string;
+  frequency: string;
+  duration: string;
+}
+
+const AddMedicationsForm: React.FC<Props> = ({
+  isModalOpen,
+  closeModal,
+  setMedications,
+}) => {
   const [dosage, setDosage] = useState('');
   const [frequency, setFrequency] = useState('');
   const [duration, setDuration] = useState('');
-  const [errors, setErrors] = useState({
+  const [searchTerm, setSearchTerm] = useState('');
+  const [medicines, setMedicines] = useState<Medicine[]>([]);
+  const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(
+    null
+  );
+  const [errors, setErrors] = useState<Error>({
     selectedMedicine: '',
     dosage: '',
     frequency: '',
@@ -59,7 +86,9 @@ const AddMedicationsForm = ({ isModalOpen, closeModal, setMedications }) => {
     return isValid;
   };
 
-  const handleSearch = async e => {
+  const handleSearch = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): Promise<void> => {
     const term = e.target.value;
     setSearchTerm(term);
 
@@ -71,18 +100,19 @@ const AddMedicationsForm = ({ isModalOpen, closeModal, setMedications }) => {
     }
   };
 
-  const handleAddMedicine = () => {
+  const handleAddMedicine = (): void => {
     if (validate()) {
-      const newMedication = {
-        medication: selectedMedicine._id,
-        name: selectedMedicine.name,
-        price: selectedMedicine.price,
-        dosage,
-        frequency,
-        duration,
-      };
-
-      setMedications(newMedication);
+      if (selectedMedicine) {
+        const newMedication: Medication = {
+          medication: selectedMedicine._id,
+          name: selectedMedicine.name,
+          price: selectedMedicine.price,
+          dosage,
+          frequency,
+          duration,
+        };
+        setMedications(newMedication);
+      }
       setSelectedMedicine(null);
       setSearchTerm('');
       setDosage('');
@@ -100,11 +130,13 @@ const AddMedicationsForm = ({ isModalOpen, closeModal, setMedications }) => {
           <Grid item xs={12}>
             <Autocomplete
               options={medicines}
-              getOptionLabel={option => option.name}
+              getOptionLabel={(option) => option.name}
               onInputChange={(event, value) => setSearchTerm(value)}
               inputValue={searchTerm}
-              onChange={(event, newValue) => setSelectedMedicine(newValue)}
-              renderInput={params => (
+              onChange={(event, newValue) => {
+                setSelectedMedicine(newValue);
+              }}
+              renderInput={(params) => (
                 <TextField
                   {...params}
                   label={t('searchMedicine')}
@@ -124,7 +156,7 @@ const AddMedicationsForm = ({ isModalOpen, closeModal, setMedications }) => {
               variant='outlined'
               fullWidth
               value={dosage}
-              onChange={e => setDosage(e.target.value)}
+              onChange={(e) => setDosage(e.target.value)}
               placeholder={t('e500mg')}
               error={!!errors.dosage}
               helperText={errors.dosage}
@@ -136,7 +168,7 @@ const AddMedicationsForm = ({ isModalOpen, closeModal, setMedications }) => {
               variant='outlined'
               fullWidth
               value={frequency}
-              onChange={e => setFrequency(e.target.value)}
+              onChange={(e) => setFrequency(e.target.value)}
               placeholder={t('eTwiceADay')}
               error={!!errors.frequency}
               helperText={errors.frequency}
@@ -148,7 +180,7 @@ const AddMedicationsForm = ({ isModalOpen, closeModal, setMedications }) => {
               variant='outlined'
               fullWidth
               value={duration}
-              onChange={e => setDuration(e.target.value)}
+              onChange={(e) => setDuration(e.target.value)}
               placeholder={t('eForAWeek')}
               error={!!errors.duration}
               helperText={errors.duration}
